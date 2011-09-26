@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translator>
+
+	<!--
+		The 'base' argument defines the language text element
+		are written with
+	-->
+
+	<languages base="en">
+		<language name="en">English</language>
+		<language name="fr">Français</language>
+	</languages>
+
+	<translations>
+		<tr>
+			<str lang="en"><![CDATA[ This text is translated ]]></str>
+			<str lang="fr"><![CDATA[ Ce texte est traduit ]]></str>
+		</tr>
+	</translations>
+	
+</translator>
+	
