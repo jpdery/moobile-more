@@ -13,239 +13,287 @@ author:
 	- Jean-Philippe Dery (jean-philippe.dery@lemieuxbedard.com)
 
 requires:
-	- Moobile/ViewController
 
 provides:
-	- ViewController.Language
+	- Moobile.Translator
 
 ...
 */
 
+/**
+ * With CSS:
+ *
+ * *[data-role][data-lang] {
+ * 	display: none
+ * }
+ *
+ */
+
 if (window.Moobile == undefined)
 	window.Moobile = {};
 
-Moobile.Translator = new new Class({
+Moobile.Translator = {
 
-	Implements: [
-		Events,
-		Options,
-		Class.Binds
-	],
-
-	base: '',
-
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
 	request: null,
 
-	language: null,
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
+	currentLanguage: null,
 
-	languages: {},
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
+	sourceLanguage: null,
 
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
+	translationLanguages: [],
+
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
 	translations: {},
 
-	get: function(key) {
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
+	get: function(source) {
 
-		if (this.language == null)
-			return key;
+		if (this.currentLanguage == null || 
+			this.currentLanguage == this.sourceLanguage)
+			return source;
 
-		var translation = this.translations[key];
-		if (translation) {
-			translation = translation[this.language];
-			if (translation) return translation;
+		var translations = this.translations[this.clean(source)];
+		if (translations) {
+			var translation = translations[this.currentLanguage];
+			if (translation) {
+				return translation;
+			}
 		}
 
 		return key;
 	},
 
-	process: function(elements) {
-
-		if (elements instanceof Element)
-			elements = [elements];
-
-		elements.each(function(element) {
-
-			var key = element.retrieve('translator:key', null);
-			if (key == null) {
-				key = element.getProperty('html');
-				key = this.clean(key);
-			}
-
-			if (key) {
-				element.set('html', this.get(key));
-				element.store('translator:key', key);
-			}
-
-		}, this);
-
-		return this;
-	},
-
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
 	load: function(file) {
+
 		if (this.request == null) {
 			this.request = new Moobile.Request();
 			this.request.addEvent('success', this.bound('onLoad'));
 		}
+
 		this.request.options.method = 'get';
 		this.request.options.url = file;
 		this.request.cancel();
 		this.request.send();
+
 		return this;
 	},
 
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
 	onLoad: function(str, xml) {
-		var doc = document.id(xml.documentElement);
-		this.loadLanguages(doc);
-		this.loadTranslations(doc);
-		this.fireEvent('loaded');
+
+		var sourceLanguages = xml.getElementsByTagName('source-language');
+		if (sourceLanguages.length == 0)
+			throw new Error('Missing <source-language> element.');
+
+		this.sourceLanguage = sourceLanguages[0].textContent.trim();
+		if (this.currentLanguage == null) {
+			this.currentLanguage = this.sourceLanguage;
+		}
+
+		var translationLanguages = xml.getElementsByTagName('translation-language');
+		if (translationLanguages.length == 0)
+			throw new Error('Missing at least one <translation-language> element.');
+
+		for (var i = 0; i < translationLanguages.length; i++) {
+			this.translationLanguages[i] = translationLanguages[i].textContent.trim();
+		}
+
+		var dict = xml.getElementsByTagName('dict');
+		if (dict.length == 0)
+			throw new Error('Missing the root <dict> element');
+
+		dict = dict[0];
+
+		for (var i = 0; i < dict.childNodes.length; i++) {
+
+			var node = dict.childNodes[i];
+			if (node.nodeType == 3)
+				continue;
+
+			if (node.nodeName == 'source') {
+
+				var source = this.clean(node.textContent);
+
+				this.translations[source] = {};
+
+				var index = -1;
+				var trans = [];
+
+				while (true) {
+
+					index++;
+
+					var nextNode = dict.childNodes[i + 1 + index];
+					if (nextNode == undefined)
+						break;
+
+					if (nextNode.nodeType == 3)
+						continue;
+
+					if (nextNode.nodeName == 'translation') {
+						trans.push(nextNode);
+					}
+
+					if (nextNode.nodeName == 'source') {
+						break;
+					}
+				}
+
+				if (trans.length != this.translationLanguages.length) {
+					throw new Error('Translations for source ' + source + ' does not match the available translations languages');
+				}
+
+				for (var j = 0; j < this.translationLanguages.length; j++) {
+
+					var translationNode = trans[j];
+					var translationLanguage = this.translationLanguages[j];
+
+					var content = new XMLSerializer().serializeToString(translationNode);
+					content = content.replace(/^<translation>/, '');
+					content = content.replace(/<\/translation>$/, '');
+
+					this.translations[source][translationLanguage] = content;
+				}
+			}
+		}
+
+		this.fireEvent('load');
+
 		return this;
 	},
 
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
 	setLanguage: function(language) {
-		if (this.language != language) {
-			this.language = language;
+
+		if (this.currentLanguage != language) {
+
+			this.willChangeLanguage(language);
+			this.currentLanguage = language;
+			this.didChangeLanguage(language);
+
 			this.fireEvent('change');
 		}
+
 		return this;
 	},
 
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
 	getLanguage: function() {
-		return this.language;
+		return this.currentLanguage;
 	},
 
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
 	clean: function(key) {
+
 		key = key.trim();
 		key = key.replace(/\s+/g, ' ');
-		key = key.stripTags();		
+		key = key.stripTags();
+
 		return key;
 	},
 
-	loadLanguages: function(doc) {
-
-		var element = doc.getElement('languages');
-		if (element == null) {
-			throw new Error('You must have a languages element.');
-		}
-
-		this.base = element.getProperty('base');
-		if (this.base == null) {
-			throw new Error('The languages element must define a base language.');
-		}
-
-		this.language = this.base;
-
-		element.getElements('language').each(function(item) {
-			var code = item.getProperty('name').trim();
-			var name = item.getProperty('text').trim();
-			this.languages[code] = name;
-		}, this);
-
-		return this;
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
+	willChangeLanguage: function(language) {
+		document.body.removeClass('lang-' + this.currentLanguage);
 	},
 
-	loadTranslations: function(doc) {
-
-		var element = doc.getElement('translations');
-		if (element) {
-			element.getElements('tr').each(function(tr) {
-
-				var key = null;
-				var val = {};
-
-				tr.getElements('str').each(function(str) {
-
-					var text = str.getProperty('text');
-					var lang = str.getProperty('lang');
-					if (lang == this.base) {
-						key = text;
-						key = this.clean(key);
-					}
-
-					val[lang] = text;
-
-				}, this);
-
-				if (key == null) {
-					throw new Error('Cannot find a traduction using the base language in ' + tr.innerHtml);
-				}
-
-				this.translations[key] = val;
-
-			}, this);
-		}
-
-		return this;
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1.0
+	 */
+	didChangeLanguage: function(language) {
+		document.body.addClass('lang-' + this.currentLanguage);
 	}
-});
+
+};
+
+Object.append(Moobile.Translator, new Events);
+Object.append(Moobile.Translator, new Options);
+Object.append(Moobile.Translator, new Class.Binds);
 
 (function() {
 
-	Class.refactor(Moobile.View, {
+	var translate = Moobile.Translator.get.bind(Moobile.Translator);
 
-		__texts: [],
+	Class.refactor(Moobile.Entity, {
 
-		build: function(element) {
-
-			this.previous(element);
-
-			this.__texts = this.getElements('[data-role=text]');
-			Moobile.Translator.process(this.__texts);
-			Moobile.Translator.addEvent('change', this.bound('__updateTexts'));
-
-			return this;
-		},
-
-		__updateTexts: function() {
-
-			this.__texts.each(function(element) {
-				var text = element.get('html');
-				if (text) {
-					text = Moobile.Translator.get(text);
-					element.set('html', text);
-				}
-			}.bind(this));
-
-			return this;
+		initialize: function(element, options, name) {
+			this.translator = Moobile.Translator;
+			return this.previous(element, options, name);
 		}
 
 	});
 
+	Class.refactor(Moobile.ViewController, {
 
-	Class.refactor(Moobile.Label, {
+		initialize: function(options, name) {
+			this.translator = Moobile.Translator;
+			return this.previous(options, name);
+		}
 
-		build: function(element) {
+	});
 
-			this.previous(element);
+	Class.refactor(Moobile.Text, {
 
-			var text = this.text.get('html');
-			if (text) {
-				text = Moobile.Translator.get(text);
-				this.text.set('html', text);
-			}
-
-			Moobile.Translator.addEvent('change', this.bound('__updateText'));
-
-			return this;
+		isTranslatable: function() {
+			return this.element.get('data-lang') == null;
 		},
 
 		setText: function(text) {
-
-			if (text) {
-				text = Moobile.Translator.get(text);
-			}
-
-			return this.previous(text);
+			return this.previous(this.isTranslatable() ? translate(text) : text);
 		},
 
-		__updateText: function() {
+		willBuild: function() {
 
-			var text = this.text.get('html');
-			if (text) {
-				text = Moobile.Translator.get(text);
-				this.text.set('html', text);
+			this.previous();
+
+			var html = this.element.get('html');
+			if (html && this.isTranslatable()) {
+				this.element.set('html', translate(html));
 			}
-
-			return this;
 		}
 
-   });
+	});
 
 })();
