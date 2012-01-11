@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<translator>
+<dict>
+
+	<translation-language>fr</translation-language>
+	<translation-language>es</translation-language>
 
 	<!--
-		The 'base' argument defines the language text element
-		are written with
+	<source>source string</source>
+	<translation>traduction en français</translation>
+	<translation>traducción en español</translation>
 	-->
 
-	<languages base="en">
-		<language name="en">English</language>
-		<language name="fr">Français</language>
-	</languages>
-
-	<translations>
-		<tr>
-			<str lang="en"><![CDATA[ This text is translated ]]></str>
-			<str lang="fr"><![CDATA[ Ce texte est traduit ]]></str>
-		</tr>
-	</translations>
-	
-</translator>
-	
+</dict>
