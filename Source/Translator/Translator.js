@@ -116,7 +116,7 @@ Moobile.Translator = {
 
 		this.sourceLanguage = sourceLanguages[0].textContent.trim();
 		if (this.currentLanguage == null) {
-			this.currentLanguage = this.sourceLanguage;
+			this.setLanguage(this.currentLanguage);
 		}
 
 		var translationLanguages = xml.getElementsByTagName('translation-language');
