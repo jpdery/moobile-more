@@ -1,7 +1,7 @@
 /*
 ---
 
-name: Fx.Page
+name: Fx.Fold
 
 description: Provides an fx transition that animates a page flip using a canvas.
 
@@ -14,13 +14,13 @@ author:
 requires:
 
 provides:
-	- Fx.Page
+	- Fx.Fold
 
 ...
 */
 
 
-Fx.Page = new Class({
+Fx.Fold = new Class({
 
 	Implements: [
 		Events,
