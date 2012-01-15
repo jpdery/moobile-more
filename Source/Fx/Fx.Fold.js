@@ -97,16 +97,19 @@ Fx.Fold = new Class({
 
 	render: function()  {
 
-		var diff = (this.target - this.progress) * 0.2;
-		this.progress += diff;
-		this.drawFrame(this.progress);
+		var increment = (this.target - this.progress) * 0.2;
+		if (Math.abs(increment) <= 0.0001) {
+			clearInterval(this.timer);
+		}
 
-		if (Math.abs(diff) <= 0.009) clearInterval(this.timer);
+		this.progress += increment;
+
+		this.draw(this.progress);
 
 		return this;
 	},
 
-	drawFrame: function(progress, context) {
+	draw: function(progress, context) {
 
 		// i deserve no credit for this
 
