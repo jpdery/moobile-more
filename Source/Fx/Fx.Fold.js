@@ -97,13 +97,11 @@ Fx.Fold = new Class({
 
 	render: function()  {
 
-		this.progress += (this.target - this.progress) * 0.2;
+		var diff = (this.target - this.progress) * 0.2;
+		this.progress += diff;
+		this.drawFrame(this.progress);
 
-		if (Math.abs(this.progress) < 0.997) {
-			this.drawFrame(this.progress);
-		} else {
-			clearInterval(this.timer);
-		}
+		if (Math.abs(diff) <= 0.009) clearInterval(this.timer);
 
 		return this;
 	},
@@ -134,7 +132,7 @@ Fx.Fold = new Class({
 		// how far the page should outdent vertically due to perspective
 		var verticalOutdent = this.options.outdent * strength;
 
-		// The maximum width of the left and right side shadows
+		// the maximum width of the left and right side shadows
 		var paperShadowWidth = (pageSizeX * 0.5 ) * Math.max(Math.min(1 - progress, 0.5), 0);
 		var rightShadowWidth = (pageSizeX * 0.5 ) * Math.max(Math.min(strength, 0.5), 0);
 		var leftShadowWidth =  (pageSizeX * 0.5 ) * Math.max(Math.min(strength, 0.5), 0);
@@ -203,46 +201,6 @@ Fx.Fold = new Class({
 		context.restore();
 
 		return this;
-	},
-
-	/*
-	mouse: {
-		x: 0,
-		y: 0
-	},
-
-	onMouseDown: function(e) {
-
-		console.log(e);
-
-		if (Math.abs(this.mouse.x) < this.options.pageSizeX) {
-			this.dragging = true;
-		}
-
-		// Prevents the text selection cursor from appearing when dragging
-		e.preventDefault();
-	},
-
-	onMouseMove: function(e) {
-	// Offset this.mouse position so that the top of the spine is 0,0
-		this.mouse.x = e.clientX - book.offsetLeft - ( this.options.bookSizeX / 2 );
-		this.mouse.y = e.clientY - book.offsetTop;
-	},
-
-	onMouseUp: function(e) {
-
-		// If this flip was being dragged we animate to its destination
-		if( this.dragging ) {
-			// Figure out which page we should go to next depending on the flip direction
-			if( this.mouse.x < 0 ) {
-				this.target = -1;
-			} else {
-				this.target = 1;
-			}
-		}
-
-		this.dragging = false;
 	}
-	*/
 
 });
