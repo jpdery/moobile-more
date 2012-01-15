@@ -14,4 +14,5 @@ authors: "Jean-Philippe Dery (jeanphilippe.dery@gmail.com)"
 
 sources:
 
+  - "Source/Fx/Fx.Page.js"
   - "Source/Translator/Translator.js"
