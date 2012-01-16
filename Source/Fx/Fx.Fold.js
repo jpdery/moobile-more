@@ -22,6 +22,8 @@ provides:
 
 Fx.Fold = new Class({
 
+	Extends: Fx,
+
 	Implements: [
 		Events,
 		Options,
@@ -34,12 +36,6 @@ Fx.Fold = new Class({
 
 	context: null,
 
-	progress: 1,
-
-	target: 1,
-
-	dragging: false,
-
 	options: {
 		bookSizeX: null,
 		bookSizeY: null,
@@ -47,16 +43,15 @@ Fx.Fold = new Class({
 		pageSizeX: null,
 		pageSizeY: null,
 		draggable: true,
-		outdent: 20
+		outdent: 20,
+		fps: 30
 	},
-
-	timer: null,
 
 	initialize: function(element, options) {
 
 		this.element = document.id(element);
 
-		this.setOptions(options);
+		this.parent(options);
 
 		var size = this.element.getSize();
 		if (this.options.bookSizeX == null) this.options.bookSizeX = size.x;
@@ -76,37 +71,25 @@ Fx.Fold = new Class({
 		return this;
 	},
 
-	start: function(to, from) {
+	start: function(from, to) {
 
 		clearInterval(this.timer);
 
 		if (to >  1) to =  1;
 		if (to < -1) to = -1;
-		this.target = to;
 
 		if (from) {
 			if (from >  1) from =  1;
 			if (from < -1) from = -1;
-			this.progress = from;
 		}
 
-		this.timer = this.render.periodical(1000 / 60, this);
+		this.parent(from, to)
 
 		return this;
 	},
 
-	render: function()  {
-
-		var increment = (this.target - this.progress) * 0.2;
-		if (Math.abs(increment) <= 0.0001) {
-			clearInterval(this.timer);
-		}
-
-		this.progress += increment;
-
-		this.draw(this.progress);
-
-		return this;
+	set: function(now){
+ 		this.draw(Math.round(now * 100000) / 100000);
 	},
 
 	draw: function(progress, context) {
