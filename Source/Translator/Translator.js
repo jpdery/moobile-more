@@ -278,6 +278,8 @@ Object.append(Moobile.Translator, new Class.Binds);
 
 	Class.refactor(Moobile.Text, {
 
+		_source: null,
+
 		isTranslatable: function() {
 			return this.element.get('data-lang') == null;
 		},
@@ -292,11 +294,12 @@ Object.append(Moobile.Translator, new Class.Binds);
 
 			var html = this.element.get('html');
 			if (html && this.isTranslatable()) {
+				this._source = html;
 				this.element.set('html', translate(html));
 			}
 
 			this.translator.addEvent('change', function() {
-				this.setText(this.getText());
+				if (this.isTranslatable()) this.setText(this._source || '');
 			}.bind(this));
 		}
 
