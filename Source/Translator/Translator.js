@@ -199,11 +199,13 @@ Moobile.Translator = {
 
 		if (this.currentLanguage != language) {
 
+			var change = this.currentLanguage != null;
+
 			this.willChangeLanguage(language);
 			this.currentLanguage = language;
 			this.didChangeLanguage(language);
 
-			this.fireEvent('change');
+			if (change) this.fireEvent('change');
 		}
 
 		return this;
@@ -292,6 +294,10 @@ Object.append(Moobile.Translator, new Class.Binds);
 			if (html && this.isTranslatable()) {
 				this.element.set('html', translate(html));
 			}
+
+			this.translator.addEvent('change', function() {
+				this.setText(this.getText());
+			}.bind(this));
 		}
 
 	});
