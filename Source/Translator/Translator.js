@@ -82,7 +82,7 @@ Moobile.Translator = {
 			}
 		}
 
-		return key;
+		return source;
 	},
 
 	/**
