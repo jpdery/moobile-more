@@ -281,7 +281,10 @@ Object.append(Moobile.Translator, new Class.Binds);
 		_source: null,
 
 		isTranslatable: function() {
-			return this.element.get('data-lang') == null;
+			if (this.element) {
+				return this.element.get('data-lang') == null;
+			}
+			return false;
 		},
 
 		setText: function(text) {
