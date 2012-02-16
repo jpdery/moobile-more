@@ -70,6 +70,8 @@ Moobile.Translator = {
 	 */
 	get: function(source) {
 
+		source = String(source);
+
 		if (this.currentLanguage == null || 
 			this.currentLanguage == this.sourceLanguage)
 			return source;
@@ -83,6 +85,27 @@ Moobile.Translator = {
 		}
 
 		return source;
+	},
+
+	add: function(source, translations) {
+
+		source = this.clean(source);
+
+		if (this.translations[source] == undefined)
+			this.translations[source] = {};
+
+		if (typeof translations == 'object') {
+			Object.each(translations, function(translation, lang) {
+				this.translations[source][lang] = translation;
+			}, this)
+		} else {
+			translations = Array.from(translations);
+			this.translationLanguages.each(function(lang, index) {
+				this.translations[source][lang] = translations[index];
+			},this);
+		}
+
+		return this;
 	},
 
 	/**
@@ -256,56 +279,72 @@ Object.append(Moobile.Translator, new Class.Binds);
 
 (function() {
 
-	var translate = Moobile.Translator.get.bind(Moobile.Translator);
+var translate = function(source) {
+	return Moobile.Translator.get.call(Moobile.Translator, source);
+};
 
-	Class.refactor(Moobile.Entity, {
+Class.refactor(Moobile.Component, {
 
-		initialize: function(element, options, name) {
-			this.translator = Moobile.Translator;
-			return this.previous(element, options, name);
+	initialize: function(element, options, name) {
+		this.translator = Moobile.Translator;
+		return this.previous(element, options, name);
+	}
+
+});
+
+Class.refactor(Moobile.ViewController, {
+
+	initialize: function(options, name) {
+		this.translator = Moobile.Translator;
+		return this.previous(options, name);
+	}
+
+});
+
+Class.refactor(Moobile.Text, {
+
+	translationSource: null,
+
+	translatable: function() {
+		return this.element ? this.element.get('data-lang') == null : false;
+	},
+
+	setText: function(text) {
+
+		if (this.translationSource == null) {
+			this.translationSource = text;
 		}
 
-	});
+		this.previous(this.translatable() ? translate(text) : text);
 
-	Class.refactor(Moobile.ViewController, {
+		return this;
+	},
 
-		initialize: function(options, name) {
-			this.translator = Moobile.Translator;
-			return this.previous(options, name);
+	setLanguage: function(language) {
+		this.element.set('data-lang', language);
+		return this;
+	},
+
+	willBuild: function() {
+
+		var html = this.element.get('html');
+		if (html) {
+			this.translationSource = html;
 		}
 
-	});
+		if (this.translationSource && this.translatable()) {
+			this.element.set('html', translate(this.translationSource));
+		}
 
-	Class.refactor(Moobile.Text, {
-
-		_source: null,
-
-		isTranslatable: function() {
-			if (this.element) {
-				return this.element.get('data-lang') == null;
+		this.translator.addEvent('change', function() {
+			if (this.translationSource && this.translatable()) {
+				this.element.set('html', translate(this.translationSource));
 			}
-			return false;
-		},
+		}.bind(this));
 
-		setText: function(text) {
-			return this.previous(this.isTranslatable() ? translate(text) : text);
-		},
+		this.previous();
+	}
 
-		willBuild: function() {
-
-			this.previous();
-
-			var html = this.element.get('html');
-			if (html && this.isTranslatable()) {
-				this._source = html;
-				this.element.set('html', translate(html));
-			}
-
-			this.translator.addEvent('change', function() {
-				if (this.isTranslatable()) this.setText(this._source || '');
-			}.bind(this));
-		}
-
-	});
+});
 
 })();
