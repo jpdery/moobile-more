@@ -36,37 +36,37 @@ Moobile.Translator = {
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	request: null,
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	currentLanguage: null,
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	sourceLanguage: null,
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	translationLanguages: [],
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	translations: {},
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	get: function(source) {
 
@@ -85,6 +85,10 @@ Moobile.Translator = {
 		return source;
 	},
 
+	/**
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1
+	 */
 	add: function(source, translations) {
 
 		source = this.clean(source);
@@ -108,7 +112,7 @@ Moobile.Translator = {
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	load: function(file) {
 
@@ -127,7 +131,7 @@ Moobile.Translator = {
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	onLoad: function(str, xml) {
 
@@ -214,7 +218,7 @@ Moobile.Translator = {
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	setLanguage: function(language) {
 
@@ -234,7 +238,7 @@ Moobile.Translator = {
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	getLanguage: function() {
 		return this.currentLanguage;
@@ -242,9 +246,11 @@ Moobile.Translator = {
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	clean: function(key) {
+
+		key = String(key);
 
 		key = key.trim();
 		key = key.replace(/\s+/g, ' ');
@@ -255,7 +261,7 @@ Moobile.Translator = {
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	willChangeLanguage: function(language) {
 		document.body.removeClass('lang-' + this.currentLanguage);
@@ -263,7 +269,7 @@ Moobile.Translator = {
 
 	/**
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1.0
+	 * @since  0.1
 	 */
 	didChangeLanguage: function(language) {
 		document.body.addClass('lang-' + this.currentLanguage);
@@ -283,6 +289,10 @@ Object.append(Moobile.Translator, new Class.Binds);
 
 	Class.refactor(Moobile.Component, {
 
+		/**
+		 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+		 * @since  0.1
+		 */
 		initialize: function(element, options, name) {
 			this.translator = Moobile.Translator;
 			return this.previous(element, options, name);
@@ -292,6 +302,10 @@ Object.append(Moobile.Translator, new Class.Binds);
 
 	Class.refactor(Moobile.ViewController, {
 
+		/**
+		 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+		 * @since  0.1
+		 */
 		initialize: function(options, name) {
 			this.translator = Moobile.Translator;
 			return this.previous(options, name);
@@ -303,10 +317,18 @@ Object.append(Moobile.Translator, new Class.Binds);
 
 		translationSource: null,
 
+		/**
+		 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+		 * @since  0.1
+		 */
 		translatable: function() {
 			return this.element ? this.element.get('data-lang') == null : false;
 		},
 
+		/**
+		 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+		 * @since  0.1
+		 */
 		setText: function(text) {
 
 			if (this.translationSource == null) {
@@ -318,11 +340,19 @@ Object.append(Moobile.Translator, new Class.Binds);
 			return this;
 		},
 
+		/**
+		 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+		 * @since  0.1
+		 */
 		setLanguage: function(language) {
 			this.element.set('data-lang', language);
 			return this;
 		},
 
+		/**
+		 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+		 * @since  0.1
+		 */
 		willBuild: function() {
 
 			var html = this.element.get('html');
