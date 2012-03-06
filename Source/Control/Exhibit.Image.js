@@ -34,7 +34,7 @@ Moobile.Exhibit.Image = new Class({
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
 	 * @since  0.1
 	 */
-	_imageSource: null,
+	_source: null,
 
 	/**
 	 * @overrides
@@ -56,8 +56,8 @@ Moobile.Exhibit.Image = new Class({
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
 	 * @since  0.1
 	 */
-	setImageSource: function(source) {
-		this._imageSource = source;
+	setSource: function(source) {
+		this._source = source;
 		return this;
 	},
 
@@ -66,8 +66,8 @@ Moobile.Exhibit.Image = new Class({
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
 	 * @since  0.1
 	 */
-	getImageSource: function() {
-		return this._imageSource;
+	getSource: function() {
+		return this._source;
 	},
 
 	/**
@@ -110,7 +110,7 @@ Moobile.Exhibit.Image = new Class({
 	 * @since  0.1
 	 */
 	present: function() {
-		this._image.setSource(this._imageSource);
+		this._image.setSource(this._source);
 		return this;
 	},
 

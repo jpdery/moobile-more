@@ -170,6 +170,16 @@ Moobile.ScrollView.Gallery = new Class({
 	},
 
 	/**
+	 * @overrides
+	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+	 * @since  0.1
+	 */
+	didShow: function() {
+		this.parent();
+		this._update();
+	},
+
+	/**
 	 * @hidden
 	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
 	 * @since  0.1
