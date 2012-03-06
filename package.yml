@@ -16,3 +16,6 @@ sources:
 
   - "Source/Fx/Fx.Fold.js"
   - "Source/Translator/Translator.js"
+  - "Source/Control/Exhibit.js"
+  - "Source/Control/Exhibit.Image.js"
+  - "Source/View/ScrollView.Gallery.js"
