@@ -84,22 +84,35 @@ Moobile.ScrollView.Gallery = new Class({
 
 		exhibit.addEvent('load', this.bound('_onExhibitLoad'));
 		exhibit.addEvent('unload', this.bound('_onExhibitUnload'));
+
 		this.addChild(exhibit);
 
 		var ymin = 0;
+		var xmin = 0;
 		var ymax = this.getContentSize().y;
+		var xmax = this.getContentSize().x;
 
-		if (ymax > 0) {
+		if (ymax > 0 && xmax > 0) {
+
 			var pos = exhibit.getPosition(this.wrapper);
+
 			var top = pos.y;
 			var bot = pos.y + exhibit.getSize().y;
-			if (bot >= ymin && top <= ymax) {
+
+			var lft = pos.x;
+			var rgt = pos.x + exhibit.getSize().x;
+
+			var visible = bot >= ymin && top <= ymax &&
+						  rgt >= xmin && lft <= xmax;
+
+			if (visible) {
 				exhibit.present();
 				this._presentedExhibits.push(exhibit);
 			} else {
 				exhibit.dismiss();
 				this._dismissedExhibits.push(exhibit);
 			}
+
 		} else {
 			exhibit.dismiss();
 			this._dismissedExhibits.push(exhibit);
@@ -168,15 +181,23 @@ Moobile.ScrollView.Gallery = new Class({
 		//
 
 		var ymin = 0;
+		var xmin = 0;
 		var ymax = this.getContentSize().y;
+		var xmax = this.getContentSize().x;
 
 		this.getExhibits().each(function(exhibit) {
 
 			var pos = exhibit.getPosition(this.wrapper);
+
 			var top = pos.y;
 			var bot = pos.y + exhibit.getSize().y;
 
-			var visible = bot >= ymin && top <= ymax;
+			var lft = pos.x;
+			var rgt = pos.x + exhibit.getSize().x;
+
+			var visible = bot >= ymin && top <= ymax &&
+						  rgt >= xmin && lft <= xmax;
+
 			if (visible) {
 				if (this._dismissedExhibits.contains(exhibit)) {
 					this._dismissedExhibits.erase(exhibit);
