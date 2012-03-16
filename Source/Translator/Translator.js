@@ -308,8 +308,22 @@ Object.append(Moobile.Translator, new Class.Binds);
 		 */
 		initialize: function(options, name) {
 			this.translator = Moobile.Translator;
+			this.translator.addEvent('change', this.bound('_onLanguageChange'));
 			return this.previous(options, name);
-		}
+		},
+
+		destroy: function() {
+			this.translator.removeEvent('change', this.bound('_onLanguageChange'));
+			this.previous();
+		},
+
+		didChangeLanguage: function() {
+
+		},
+
+		_onLanguageChange: function() {
+			this.didChangeLanguage(this.translator.getLanguage());
+		},
 
 	});
 
