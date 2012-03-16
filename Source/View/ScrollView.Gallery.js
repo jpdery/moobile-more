@@ -42,7 +42,7 @@ Moobile.ScrollView.Gallery = new Class({
 	 */
 	didBuild: function() {
 		this.parent();
-		this.addEvent('scroll', this.bound('_onScroll'));
+		this.addEvent('scroll', this.bound('_update'));
 	},
 
 	/**
@@ -59,7 +59,7 @@ Moobile.ScrollView.Gallery = new Class({
 	 * @since  0.1
 	 */
 	destroy: function() {
-		this.removeEvent('scroll', this.bound('_onScroll'));
+		this.removeEvent('scroll', this.bound('_update'));
 		this.parent();
 	},
 
@@ -89,12 +89,12 @@ Moobile.ScrollView.Gallery = new Class({
 
 		var ymin = 0;
 		var xmin = 0;
-		var ymax = this.getContentSize().y;
-		var xmax = this.getContentSize().x;
+		var ymax = this.getWrapperElement().getSize().y;
+		var xmax = this.getWrapperElement().getSize().x;
 
 		if (ymax > 0 && xmax > 0) {
 
-			var pos = exhibit.getPosition(this.wrapper);
+			var pos = exhibit.getPosition(this.wrapperElement);
 
 			var top = pos.y;
 			var bot = pos.y + exhibit.getSize().y;
@@ -192,12 +192,12 @@ Moobile.ScrollView.Gallery = new Class({
 
 		var ymin = 0;
 		var xmin = 0;
-		var ymax = this.getContentSize().y;
-		var xmax = this.getContentSize().x;
+		var ymax = this.wrapperElement.getSize().y;
+		var xmax = this.wrapperElement.getSize().x;
 
 		this.getExhibits().each(function(exhibit) {
 
-			var pos = exhibit.getPosition(this.wrapper);
+			var pos = exhibit.getPosition(this.wrapperElement);
 
 			var top = pos.y;
 			var bot = pos.y + exhibit.getSize().y;
@@ -245,15 +245,6 @@ Moobile.ScrollView.Gallery = new Class({
 	 */
 	_onExhibitUnload: function(sender) {
 		this.fireEvent('exhibitunload', sender);
-	},
-
-	/**
-	 * @hidden
-	 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-	 * @since  0.1
-	 */
-	_onScroll: function() {
-		this._update();
 	}
 
 });
