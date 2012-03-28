@@ -19,3 +19,4 @@ sources:
   - "Source/Control/Exhibit.js"
   - "Source/Control/Exhibit.Image.js"
   - "Source/View/ScrollView.Gallery.js"
+  - "Source/Util/Timer.js"
