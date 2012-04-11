@@ -249,13 +249,9 @@ Moobile.Translator = {
 	 * @since  0.1
 	 */
 	clean: function(key) {
-
 		key = String(key);
-
 		key = key.trim();
-		key = key.replace(/\s+/g, ' ');
-		key = key.stripTags();
-
+		key = key.replace(/[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g, '');
 		return key;
 	},
 
