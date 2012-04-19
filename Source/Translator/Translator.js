@@ -309,15 +309,27 @@ Object.append(Moobile.Translator, new Class.Binds);
 			return this.previous(options, name);
 		},
 
+		/**
+		 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+		 * @since  0.1
+		 */
 		destroy: function() {
 			this.translator.removeEvent('change', this.bound('_onLanguageChange'));
 			this.previous();
 		},
 
+		/**
+		 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+		 * @since  0.1
+		 */
 		didChangeLanguage: function() {
 
 		},
 
+		/**
+		 * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
+		 * @since  0.1
+		 */
 		_onLanguageChange: function() {
 			this.didChangeLanguage(this.translator.getLanguage());
 		},
@@ -382,6 +394,33 @@ Object.append(Moobile.Translator, new Class.Binds);
 			}.bind(this));
 
 			this.previous();
+		}
+
+	});
+
+	Class.refactor(Moobile.Image, {
+
+		willBuild: function() {
+
+			this.parent();
+
+			var updateSource = function() {
+				var source = null;
+				if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-' + Browser.Device.name + '-2x-' + this.translator.getLanguage());
+				if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-' + Browser.Device.name + '-2x');
+				if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-2x-' + this.translator.getLanguage());
+				if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-2x');
+				if (source === null) source = this.element.get('data-src-' + Browser.Device.name + '-' + this.translator.getLanguage());
+				if (source === null) source = this.element.get('data-src-' + Browser.Device.name);
+				if (source === null) source = this.element.get('data-src-' + this.translator.getLanguage());
+				if (source) this.setSource(source);
+			}.bind(this);
+
+			this.translator.addEvent('change', function() {
+				updateSource();
+			}.bind(this));
+
+			updateSource();
 		}
 
 	});
