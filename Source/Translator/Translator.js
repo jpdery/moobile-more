@@ -400,27 +400,27 @@ Object.append(Moobile.Translator, new Class.Binds);
 
 	Class.refactor(Moobile.Image, {
 
+		_updateSource: function() {
+			var source = null;
+			if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-' + Browser.Device.name + '-2x-' + this.translator.getLanguage());
+			if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-' + Browser.Device.name + '-2x');
+			if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-2x-' + this.translator.getLanguage());
+			if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-2x');
+			if (source === null) source = this.element.get('data-src-' + Browser.Device.name + '-' + this.translator.getLanguage());
+			if (source === null) source = this.element.get('data-src-' + Browser.Device.name);
+			if (source === null) source = this.element.get('data-src-' + this.translator.getLanguage());
+			if (source) this.setSource(source);
+		},
+
 		willBuild: function() {
+			this.previous();
+			this._updateSource();
+			this.translator.addEvent('change', this.bound('_updateSource'));
+		},
 
-			this.parent();
-
-			var updateSource = function() {
-				var source = null;
-				if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-' + Browser.Device.name + '-2x-' + this.translator.getLanguage());
-				if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-' + Browser.Device.name + '-2x');
-				if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-2x-' + this.translator.getLanguage());
-				if (source === null && window.devicePixelRatio >= 2) source = this.element.get('data-src-2x');
-				if (source === null) source = this.element.get('data-src-' + Browser.Device.name + '-' + this.translator.getLanguage());
-				if (source === null) source = this.element.get('data-src-' + Browser.Device.name);
-				if (source === null) source = this.element.get('data-src-' + this.translator.getLanguage());
-				if (source) this.setSource(source);
-			}.bind(this);
-
-			this.translator.addEvent('change', function() {
-				updateSource();
-			}.bind(this));
-
-			updateSource();
+		destroy: function() {
+			this.translator.removeEvent('change', this.bound('_updateSource'));
+			this.previous();
 		}
 
 	});
