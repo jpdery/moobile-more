@@ -354,6 +354,9 @@ Object.append(Moobile.Translator, new Class.Binds);
 		 */
 		setText: function(text) {
 
+			if (text instanceof Moobile.Text)
+				text = text.getText();
+
 			if (this.translationSource == null) {
 				this.translationSource = text;
 			}
